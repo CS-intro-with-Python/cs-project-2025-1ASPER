@@ -1,0 +1,22 @@
+name: CI Check
+
+on: [push, pull_request]
+
+jobs:
+
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build the image
+        run: docker build -t asper/docker_reco .
+
+      - name: Run the container
+        run: docker run -d --name movie-server -p 8080:8080 asper/docker_reco
+      
+      - name: Run client tests
+        run: docker exec movie-server python tests/client.py
