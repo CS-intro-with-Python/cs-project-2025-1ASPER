@@ -9,6 +9,7 @@ TEMPLATE_DIR = os.path.join(BASE_DIR, '../templates')
 app = Flask(__name__, template_folder=TEMPLATE_DIR)
 
 
+
 @app.route("/")
 def index():
     return render_template('index.html')
