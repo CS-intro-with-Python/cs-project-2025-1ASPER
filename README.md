@@ -1,8 +1,8 @@
 # Movie Recommendation System
 
-[![CI Check](https://github.com/1ASPER/cs-project-2025-1ASPER/actions/workflows/ci.yml/badge.svg)](https://github.com/1ASPER/cs-project-2025-1ASPER/actions/workflows/ci.yml)
+This project is a movie recommendation service built for the Client-Server Application course. It demonstrates a complete, production ready CI/CD pipeline using Flask, Docker, GitHub Actions and Railway.
 
-This project is a mock movie recommendation service built for the Client-Server Application course. It demonstrates a complete, production-ready CI/CD pipeline using Flask, Docker, GitHub Actions, and Railway.
+UPD: Right it's only a 'mock' version of project. It will be updates soon...
 
 
 ## Demo
