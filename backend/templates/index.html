@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Hub</title>
+
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/FlagKyrgyzstan.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+<div class="background-overlay"></div>
+
+<header class="navbar">
+    <div class="logo">🎬 Movie Hub</div>
+    <nav>
+        <a href="{{ url_for('home') }}">Home</a>
+
+        {% if user %}
+            <span class="user-info">Logged as {{ user.login }}</span>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        {% else %}
+            <a href="{{ url_for('login') }}">Login with GitHub</a>
+        {% endif %}
+
+        <a href="{{ url_for('admin_login') }}">Admin</a>
+    </nav>
+</header>
+
+<main class="content">
+    <h1 class="headline">Pick a movie. Pretend you have free time.</h1>
+
+    <div style="text-align:center; margin: 10px 0 25px;">
+        <button class="primary-btn" id="btn-recommend">What to watch?</button>
+    </div>
+
+    <section>
+        <div id="movies-grid" class="movies-grid"></div>
+    </section>
+</main>
+
+<!-- Recommendation modal -->
+<div id="recommend-modal" class="modal hidden">
+    <div class="modal-content">
+        <span class="close-btn" id="modal-close">×</span>
+        <h2 id="rec-title">Recommendation</h2>
+        <p id="rec-meta" class="meta"></p>
+        <p id="rec-desc" class="description"></p>
+        <div style="margin-top: 12px;">
+            <a id="rec-link" class="primary-btn" href="#">Open</a>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
