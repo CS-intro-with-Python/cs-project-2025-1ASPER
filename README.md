@@ -13,7 +13,6 @@ Includes an admin panel (password-protected) to manage movies and upload video f
 ---
 
 ## Features
-
 - Modern UI (cards grid, background wallpaper, responsive layout)
 - Movie catalog: title, short description with ellipsis, rating, “Watch now”
 - Movie page: HTML5 video player (plays uploaded .mp4/.webm/.ogg)
@@ -42,40 +41,6 @@ Typical flow:
 2. “What to watch?” -> JS calls GET /api/recommendations -> shows a modal with a pick.
 3. “Watch now” -> opens /movie/<id> -> HTML renders <video src=...>.
 
----
-
-## Grading criteria mapping (important)
-
-This project is built to satisfy the course checkpoints.
-
-### Checkpoint 14.11.2025 (max 35 pts)
-- README.md actual & complete (this file)
-- Docker (Dockerfile + docker-compose.yml)
-- CI/CD (GitHub Actions for build/run/route checks + Railway deployment)
-- Simple server + client (Flask route(s) + browser client + requests checks in CI)
-
-### Checkpoint 16.12.2025 (max 65 pts)
-- Routes & features
-  - Web pages + API routes (see below)
-  - Features described here match implementation
-- Database
-  - PostgreSQL + SQLAlchemy (flask_sqlalchemy)
-- Tests
-  - 2+ unit tests (validation, error handling)
-  - 2+ integration tests (API create/retrieve/update/delete)
-- Logger
-  - Flask app.logger with structured output
-- Authorization using OAuth 2.0 (extra points)
-  - GitHub OAuth 2.0 login (optional, can be disabled if env vars not set)
-- Docker Compose
-  - DB and web server as separate containers
-  - connection params via environment variables
-- Deployed using Docker
-  - Designed to deploy to Railway (or any Docker host)
-
-Notes:
-- If a grader runs the app in Docker and the described features work, you are in the “Routes” bracket for the checkpoint.
-- OAuth 2.0 is an extra task.
 
 ---
 
@@ -170,23 +135,7 @@ and become available via:
 
 ---
 
-## Video URLs: what works
-
-The HTML5 video tag expects a direct file URL it can stream, not a YouTube page link.
-
-Works:
-- /static/videos/my_movie.mp4
-- https://example.com/video.mp4 (direct file)
-- https://cdn.example.com/movie.webm
-
-Does not work:
-- https://youtube.com/watch?v=... (not a direct stream URL)
-
-Best option: upload through the admin panel, and the app will auto-set video_url.
-
----
-
-## GitHub OAuth 2.0 (optional)
+## GitHub OAuth 2.0
 
 OAuth is optional. If GITHUB_CLIENT_ID / GITHUB_CLIENT_SECRET are empty, the app will still run, but “Login” will redirect back to home.
 
@@ -239,36 +188,3 @@ Service web is not running:
 ```bash
 docker compose logs -f web
 ```
-
-Postgres error: role "-d" does not exist:
-Use $$POSTGRES_USER in docker-compose.yml healthcheck:
-```yaml
-test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
-```
-
-Browser cache doesn’t update styles/scripts:
-Hard refresh: Cmd + Shift + R
-
-Docker Compose warns: attribute version is obsolete:
-Remove the version: line from docker-compose.yml. It is harmless.
-
----
-
-## Deployment (Railway)
-
-This project is designed to be deployable on Railway using Docker.
-
-General steps:
-1. Push repo to GitHub
-2. Create Railway project from GitHub repo
-3. Add environment variables in Railway
-4. Ensure services:
-   - web (Flask)
-   - db (Postgres) or Railway Postgres plugin
-5. Railway will build and run Docker image
-
----
-
-## License
-
-Educational project for the course.
