@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if movie %}{{ movie.title }}{% else %}Not found{% endif %} – Movie Hub</title>
+
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/FlagKyrgyzstan.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+<div class="background-overlay"></div>
+
+<header class="navbar">
+    <div class="logo">🎬 Movie Hub</div>
+    <nav>
+        <a href="{{ url_for('home') }}">Home</a>
+
+        {% if user %}
+            <span class="user-info">Logged as {{ user.login }}</span>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        {% else %}
+            <a href="{{ url_for('login') }}">Login with GitHub</a>
+        {% endif %}
+
+        <a href="{{ url_for('admin_login') }}">Admin</a>
+    </nav>
+</header>
+
+<main class="content movie-detail-page">
+    {% if not movie %}
+        <h1 class="headline">Movie not found</h1>
+        <div style="text-align:center;">
+            <a class="primary-btn" href="{{ url_for('home') }}">Back</a>
+        </div>
+    {% else %}
+        <h1 class="headline">{{ movie.title }}</h1>
+        <div class="meta" style="text-align:center;">
+            {{ movie.genre }}
+            {% if movie.year %} • {{ movie.year }}{% endif %}
+            {% if movie.rating is not none %} • Rating: {{ movie.rating }}{% endif %}
+        </div>
+
+        {% if movie.video_url %}
+            <div class="video-wrapper">
+                <video controls preload="metadata">
+                    <source src="{{ movie.video_url }}">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        {% else %}
+            <div class="description" style="text-align:center;">
+                No video linked for this movie.
+            </div>
+        {% endif %}
+
+        {% if movie.description %}
+            <div class="description">
+                {{ movie.description }}
+            </div>
+        {% endif %}
+    {% endif %}
+</main>
+
+</body>
+</html>

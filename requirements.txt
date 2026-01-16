@@ -1,2 +1,7 @@
-Flask
-requests
+Flask>=2.3.0
+Flask-SQLAlchemy>=3.0.0
+psycopg2-binary>=2.9.0
+pytest>=7.0.0
+pytest-flask>=1.2.0
+Authlib>=1.1.0
+requests>=2.31.0

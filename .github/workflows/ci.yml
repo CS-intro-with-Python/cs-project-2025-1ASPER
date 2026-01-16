@@ -1,22 +1,106 @@
-name: CI Check
+name: CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+    branches: ["main", "master"]
 
 jobs:
-
-  build-and-test:
+  test:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
-    
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build the image
-        run: docker build -t asper/docker_reco .
+      - name: Show Docker versions
+        run: |
+          docker --version
+          docker compose version
 
-      - name: Run the container
-        run: docker run -d --name movie-server -p 8080:8080 asper/docker_reco
-      
-      - name: Run client tests
-        run: docker exec movie-server python tests/client.py
+      - name: Create .env for CI
+        run: |
+          cat > .env << 'EOF'
+          SECRET_KEY=ci_secret_key
+          LOG_LEVEL=INFO
+
+          POSTGRES_DB=movies
+          POSTGRES_USER=movies_user
+          POSTGRES_PASSWORD=movies_pass
+          SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://movies_user:movies_pass@db:5432/movies
+
+          GITHUB_CLIENT_ID=
+          GITHUB_CLIENT_SECRET=
+          EOF
+
+      - name: Build and start (docker compose)
+        run: |
+          docker compose up -d --build
+
+      - name: Wait for DB (pg_isready)
+        run: |
+          set -e
+          db_id="$(docker compose ps -q db)"
+          if [ -z "$db_id" ]; then
+            echo "DB container not found"
+            docker compose ps
+            exit 1
+          fi
+
+          echo "Waiting for Postgres to accept connections..."
+          for i in $(seq 1 60); do
+            if docker exec "$db_id" pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB" >/dev/null 2>&1; then
+              echo "DB is ready"
+              exit 0
+            fi
+            sleep 1
+          done
+
+          echo "DB did not become ready in time"
+          docker compose ps
+          docker compose logs db
+          exit 1
+        env:
+          POSTGRES_DB: movies
+          POSTGRES_USER: movies_user
+
+      - name: Wait for Web
+        run: |
+          set -e
+          echo "Waiting for web to respond..."
+          for i in $(seq 1 60); do
+            if curl -fsS http://localhost:8080/ >/dev/null; then
+              echo "Web is up"
+              exit 0
+            fi
+            sleep 1
+          done
+
+          echo "Web did not respond in time"
+          docker compose ps
+          docker compose logs web
+          exit 1
+
+      - name: Smoke test routes
+        run: |
+          curl -fsS http://localhost:8080/ >/dev/null
+          curl -fsS http://localhost:8080/api/movies >/dev/null
+          curl -fsS http://localhost:8080/api/recommendations >/dev/null
+
+      - name: Run tests (pytest inside container)
+        run: |
+          docker compose exec -T web pytest -q
+
+      - name: Show logs on failure
+        if: failure()
+        run: |
+          docker compose ps
+          docker compose logs web
+          docker compose logs db
+
+      - name: Shutdown
+        if: always()
+        run: |
+          docker compose down -v

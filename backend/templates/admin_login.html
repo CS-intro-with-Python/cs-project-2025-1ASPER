@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login – Movie Hub</title>
+
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/FlagKyrgyzstan.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body class="admin-body">
+<div class="background-overlay admin"></div>
+
+<header class="navbar">
+    <div class="logo">🔐 Admin</div>
+    <nav>
+        <a href="{{ url_for('home') }}">Home</a>
+
+        {% if user %}
+            <span class="user-info">Logged as {{ user.login }}</span>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        {% else %}
+            <a href="{{ url_for('login') }}">Login with GitHub</a>
+        {% endif %}
+    </nav>
+</header>
+
+<main class="content">
+    <div class="login-container">
+        <h2 style="margin-top:0;">Admin access</h2>
+        <p class="meta">Password: <b>3333</b></p>
+
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST" action="{{ url_for('admin_login') }}">
+            <input type="password" name="password" placeholder="Enter password" required>
+            <button type="submit">Enter</button>
+        </form>
+    </div>
+</main>
+
+</body>
+</html>
